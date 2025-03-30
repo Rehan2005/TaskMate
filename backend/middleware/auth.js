@@ -2,9 +2,14 @@ import admin from "firebase-admin";
 import dotenv from "dotenv";
 
 dotenv.config();
+if (!process.env.FIREBASE_CONFIG) {
+  console.error("❌ ERROR: Missing FIREBASE_CONFIG environment variable!");
+  process.exit(1); // Stop the server
+}
+const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
 
 admin.initializeApp({
-  credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)),
+  credential: admin.credential.cert(serviceAccount),
 });
 
 export const verifyToken = async (req, res, next) => {
@@ -19,3 +24,5 @@ export const verifyToken = async (req, res, next) => {
     res.status(401).json({ message: "Invalid token" });
   }
 };
+
+export default admin;
